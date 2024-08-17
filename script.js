@@ -114,7 +114,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function showWinMessage() {
         setTimeout(() => {
-            alert(`¡Felicidades ${userGender}! A tus ${userAge} años, encontraste el único par correcto en ${moves} movimientos en la ${timeOfDay}.`);
+            alert(`¡Felicidades, encontraste el único par correcto en ${moves} intentos. \nInformación de Usuario:\nGénero: ${userGender}! \nEdad: ${userAge}\nTiempo del día:${timeOfDay}`);
+            generateExcel();  // Generar y descargar el archivo Excel
             lockBoard = true;  // Bloquear el tablero después de ganar
         }, 500);
     }
