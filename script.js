@@ -2,14 +2,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const cardsContainer = document.getElementById("cards-container");
     const movesCountElement = document.getElementById("moves-count");
     const restartButton = document.getElementById("restart");
-    const startButton = document.getElementById("start-button"); // Botón de inicio
-    const gameContainer = document.getElementById("dynamic-cards"); // Contenedor del juego
-    const startScreen = document.getElementById("start-screen"); // Pantalla de inicio
-    const timerElement = document.getElementById("timer"); // Elemento del temporizador
+    const startButton = document.getElementById("start-button");
+    const gameContainer = document.getElementById("dynamic-cards");
+    const startScreen = document.getElementById("start-screen");
+    const userInfoForm = document.getElementById("user-info-form");
+    const timerElement = document.getElementById("timer");
     let moves = 0;
     let firstCard = null;
     let secondCard = null;
     let lockBoard = true;
+    let userGender = '';
+    let userAge = '';
+    let timeOfDay = '';
 
     const cardImages = [
         "images/0B.png", "images/1B.png", "images/2B.png", "images/3B.png", 
@@ -81,7 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function flipCard() {
-        if (lockBoard) return;
+        if (lockBoard) return;  // Evitar cualquier interacción si el tablero está bloqueado
         if (this === firstCard) return;
 
         this.classList.add("toggled");
@@ -102,10 +106,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (isMatch) {
             disableCards();
-            checkWinCondition();
+            showWinMessage();  // Mostrar el mensaje de victoria
         } else {
             unflipCards();
         }
+    }
+
+    function showWinMessage() {
+        setTimeout(() => {
+            alert(`¡Felicidades, encontraste el único par correcto en ${moves} intentos. \nInformación de Usuario:\nGénero: ${userGender}! \nEdad: ${userAge}\nTiempo del día:${timeOfDay}`);
+            generateExcel();  // Generar y descargar el archivo Excel
+            lockBoard = true;  // Bloquear el tablero después de ganar
+        }, 500);
     }
 
     function disableCards() {
@@ -127,18 +139,6 @@ document.addEventListener("DOMContentLoaded", () => {
         [firstCard, secondCard, lockBoard] = [null, null, false];
     }
 
-    function checkWinCondition() {
-        const allMatched = Array.from(document.querySelectorAll(".card")).every(card =>
-            card.classList.contains("toggled")
-        );
-
-        if (allMatched) {
-            setTimeout(() => {
-                alert(`Encontraste el par de cartas en ${moves} intentos! :D`);
-            }, 500);
-        }
-    }
-
     function startGame() {
         moves = 0;
         movesCountElement.textContent = moves;
@@ -150,6 +150,17 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         showRowsSequentially(0);
+    }
+
+    function calculateTimeOfDay() {
+        const hours = new Date().getHours();
+        if (hours >= 6 && hours < 12) {
+            timeOfDay = "mañana";
+        } else if (hours >= 12 && hours < 18) {
+            timeOfDay = "tarde";
+        } else {
+            timeOfDay = "noche";
+        }
     }
 
     function showRowsSequentially(row) {
@@ -193,13 +204,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function enableGameplay() {
         lockBoard = false;
-        timerElement.textContent = '';
+        timerElement.textContent = ''; // Limpiar el temporizador después de la visualización
     }
 
-    // Maneja el clic en el botón de inicio
-    startButton.addEventListener("click", () => {
-        startScreen.style.display = "none"; 
-        gameContainer.style.display = "block"; 
+    // Maneja el envío del formulario y el inicio del juego
+    userInfoForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        userGender = document.getElementById("gender").value;
+        userAge = document.getElementById("age").value;
+        calculateTimeOfDay();
+        startScreen.style.display = "none"; // Oculta la pantalla de inicio
+        gameContainer.style.display = "block"; // Muestra el contenedor del juego
         startGame(); // Inicia el juego
     });
 
