@@ -208,7 +208,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Maneja el envío del formulario y el inicio del juego
     userInfoForm.addEventListener("submit", (event) => {
-        event.preventDefault();
+        event.preventDefault();  // Evita el envío predeterminado del formulario
         userGender = document.getElementById("gender").value;
         userAge = document.getElementById("age").value;
         calculateTimeOfDay();
